@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { generateHexString } from '@/utils/hexUtils';
@@ -13,7 +12,7 @@ interface HexagonGeneratorProps {
 
 const HexagonGenerator = ({ className }: HexagonGeneratorProps) => {
   const { toast } = useToast();
-  const [length, setLength] = useState(16);
+  const [length, setLength] = useState(8);
   const [hexString, setHexString] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
 

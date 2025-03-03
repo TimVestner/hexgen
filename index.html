@@ -196,7 +196,7 @@
             if (probability < 0.00001) return '<0.00001%';
             if (probability > 99.9999) return '>99.9999%';
             
-            return probability.toFixed(4) + '%';
+            return probability.toFixed(5) + '%';
         }
 
         function getWarningMessage(n, d) {

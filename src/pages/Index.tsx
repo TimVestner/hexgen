@@ -14,7 +14,7 @@ const Index = () => {
         <div className="text-center mb-12">
           <h1 className="text-4xl font-semibold tracking-tight mb-3">Random ID Generator</h1>
           <p className="text-muted-foreground max-w-md mx-auto">
-            Create random hexadecimal strings with perfect precision.
+            Create random hexadecimal strings that can be used as Participant IDs.
           </p>
         </div>
         

@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { generateHexString } from '@/utils/hexUtils';
 import GeneratorInput from './GeneratorInput';
 import GeneratedString from './GeneratedString';
+import CollisionCalculator from './CollisionCalculator';
 import { useToast } from '@/components/ui/use-toast';
 
 interface HexagonGeneratorProps {
@@ -77,6 +78,10 @@ const HexagonGenerator = ({ className }: HexagonGeneratorProps) => {
             <GeneratedString value={hexString} />
           </div>
         </div>
+      </div>
+      
+      <div className="mt-8 hex-container glass rounded-xl p-6 shadow-sm">
+        <CollisionCalculator idLength={length} />
       </div>
       
       <div className="mt-6 text-center text-xs text-muted-foreground">

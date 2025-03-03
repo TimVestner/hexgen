@@ -1,18 +1,210 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>hexagon-generator</title>
-    <meta name="description" content="Lovable Generated Project" />
-    <meta name="author" content="Lovable" />
-    <meta property="og:image" content="/og-image.png" />
-  </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hex String Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            background-color: #f0f0f0;
+        }
 
-  <body>
-    <div id="root"></div>
-    <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
-    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
-    <script type="module" src="/hexgen/src/main.tsx"></script>
-  </body>
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #f8f8f8;
+            border-radius: 4px;
+            word-break: break-all;
+        }
+
+        .copy-btn {
+            background-color: #008CBA;
+            margin-left: 1rem;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 1rem;
+            border-radius: 4px;
+            display: none;
+        }
+        .probability-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #eee;
+        }
+
+        .probability-result {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f8f8f8;
+            border-radius: 4px;
+        }
+
+        .warning {
+            color: #d32f2f;
+            margin-top: 0.5rem;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Random ID Generator</h1>
+      <p>Create hexadecimal strings between 1 and 30 digits to be used as random IDs.</p>
+        <div class="input-group">
+            <label for="length">Enter desired length:</label>
+            <input type="number" id="length" min="1" max="30" value="10">
+        </div>
+        <button onclick="generateHex()">Generate</button>
+        <div id="result"></div> 
+        <div class="probability-section">
+            <h2>Collision Probability Calculator</h2>
+          <p>Calculate the probability two or more participants end up with the same random ID using the length given above.</p>
+            <div class="input-group">
+                <label for="participants">Number of participants:</label>
+                <input type="number" id="participants" min="2" value="100">
+            </div>
+            <button onclick="calculateProbability()">Calculate Probability</button>
+            <div id="probabilityResult" class="probability-result"></div>
+        </div>
+    </div>
+    <div class="notification" id="notification">Copied!</div>
+
+    <script>
+        function generateHex() {
+            const length = parseInt(document.getElementById('length').value);
+            if (isNaN(length) || length < 1) {
+                alert('Please enter a valid positive number');
+                return;
+            }
+
+            const hexChars = '0123456789abcdef';
+            let result = '';
+            
+            for (let i = 0; i < length; i++) {
+                const randomIndex = Math.floor(Math.random() * hexChars.length);
+                result += hexChars[randomIndex];
+            }
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+                <p>Generated hex string (${length} characters):</p>
+                <div style="margin: 1rem 0; font-family: monospace;">${result}</div>
+                <button class="copy-btn" onclick="copyToClipboard('${result}')">Copy</button>
+            `;
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const notification = document.getElementById('notification');
+                notification.style.display = 'block';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 2000);
+            });
+        }
+
+        // Allow Enter key to generate
+        document.getElementById('length').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                generateHex();
+            }
+        });
+        function calculateProbability() {
+            const length = parseInt(document.getElementById('length').value);
+            const participants = parseInt(document.getElementById('participants').value);
+            
+            if (isNaN(length) || length < 1) {
+                alert('Please generate a valid hex length first');
+                return;
+            }
+            
+            if (isNaN(participants) || participants < 2) {
+                alert('Please enter at least 2 participants');
+                return;
+            }
+
+            const totalPossible = Math.pow(16, length);
+            const probability = calculateCollisionProbability(participants, totalPossible);
+            
+            const resultDiv = document.getElementById('probabilityResult');
+            resultDiv.innerHTML = `
+                <p>Probability of collision with ${participants.toLocaleString()} participants:</p>
+                <h3>${probability}</h3>
+                <div class="warning">${getWarningMessage(participants, totalPossible)}</div>
+            `;
+        }
+
+        function calculateCollisionProbability(n, d) {
+            if (n > d) return '100% (more participants than possible codes)';
+            
+            // Using the approximate birthday problem formula
+            const exponent = - (n * (n - 1)) / (2 * d);
+            const probability = 100 * (1 - Math.exp(exponent));
+            
+            if (probability < 0.00001) return '<0.00001%';
+            if (probability > 99.9999) return '>99.9999%';
+            
+            return probability.toFixed(4) + '%';
+        }
+
+        function getWarningMessage(n, d) {
+            if (n > d) return 'Warning: More participants than possible codes - guaranteed collision!';
+            if (n > Math.sqrt(d)) return 'Warning: High probability of collision!';
+            if (n > Math.cbrt(d)) return 'Note: Moderate probability of collision';
+            return 'Low probability of collision';
+        }
+    </script>
+</body>
 </html>

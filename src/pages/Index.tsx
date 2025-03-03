@@ -15,7 +15,7 @@ const Index = () => {
           <div className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary mb-4 animate-fade-in">
             Simple & Powerful
           </div>
-          <h1 className="text-4xl font-semibold tracking-tight mb-3">Hexagon Generator</h1>
+          <h1 className="text-4xl font-semibold tracking-tight mb-3">Random ID Generator</h1>
           <p className="text-muted-foreground max-w-md mx-auto">
             Create random hexadecimal strings with perfect precision. 
             Customizable length, instant generation.

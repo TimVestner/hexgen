@@ -47,7 +47,7 @@ const HexagonGenerator = ({ className }: HexagonGeneratorProps) => {
       <div className="hex-container glass rounded-xl p-6 shadow-sm">
         <div className="space-y-6">
           <div className="space-y-2">
-            <h2 className="text-2xl font-medium tracking-tight">Hexagon Generator</h2>
+            <h2 className="text-2xl font-medium tracking-tight">Random ID Generator</h2>
             <p className="text-sm text-muted-foreground">
               Generate random hexadecimal strings of customizable length.
             </p>

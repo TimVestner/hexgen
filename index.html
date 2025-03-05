@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,6 +97,23 @@
             margin-top: 0.5rem;
             font-size: 0.9em;
         }
+        .bulk-controls {
+            margin: 1rem 0;
+        }
+
+        #codesList {
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 1rem 0;
+            padding: 1rem;
+            background-color: #f8f8f8;
+            border-radius: 4px;
+        }
+
+        .code-item {
+            margin: 0.25rem 0;
+            font-family: monospace;
+        }
     </style>
 </head>
 <body>
@@ -104,10 +122,16 @@
       <p>Create hexadecimal strings between 1 and 30 digits to be used as random IDs.</p>
         <div class="input-group">
             <label for="length">Enter desired length:</label>
-            <input type="number" id="length" min="1" max="30" value="10">
+            <input type="number" id="length" min="1" value="10">
+        </div>
+        <div class="input-group bulk-controls">
+            <label for="count">Number of codes to generate (1-100):</label>
+            <input type="number" id="count" min="1" max="100" value="1">
         </div>
         <button onclick="generateHex()">Generate</button>
-        <div id="result"></div> 
+        <div id="result">
+            <div id="codesList"></div>
+        </div>
         <div class="probability-section">
             <h2>Collision Probability Calculator</h2>
           <p>Calculate the probability two or more participants end up with the same random ID using the length given above.</p>
@@ -124,37 +148,68 @@
     <script>
         function generateHex() {
             const length = parseInt(document.getElementById('length').value);
+            const count = parseInt(document.getElementById('count').value);
+            
             if (isNaN(length) || length < 1) {
-                alert('Please enter a valid positive number');
+                alert('Please enter a valid positive number for length');
+                return;
+            }
+            
+            if (isNaN(count) || count < 1 || count > 100) {
+                alert('Please enter a number between 1 and 100 for count');
                 return;
             }
 
+            const codes = [];
+            for (let i = 0; i < count; i++) {
+                codes.push(generateSingleHex(length));
+            }
+
+            displayCodes(codes);
+        }
+
+        function generateSingleHex(length) {
             const hexChars = '0123456789abcdef';
             let result = '';
-            
             for (let i = 0; i < length; i++) {
-                const randomIndex = Math.floor(Math.random() * hexChars.length);
-                result += hexChars[randomIndex];
+                result += hexChars[Math.floor(Math.random() * hexChars.length)];
             }
+            return result;
+        }
+
+        function displayCodes(codes) {
+            const codesList = document.getElementById('codesList');
+            codesList.innerHTML = codes.map((code, index) => `
+                <div class="code-item">
+                    ${index + 1}. ${code}
+                </div>
+            `).join('');
 
             const resultDiv = document.getElementById('result');
             resultDiv.innerHTML = `
-                <p>Generated hex string (${length} characters):</p>
-                <div style="margin: 1rem 0; font-family: monospace;">${result}</div>
-                <button class="copy-btn" onclick="copyToClipboard('${result}')">Copy</button>
+                <p>Generated ${codes.length} codes (${document.getElementById('length').value} characters each):</p>
+                ${codesList.outerHTML}
+                <button class="copy-btn" onclick="copyAllCodes()">Copy All</button>
             `;
         }
 
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                const notification = document.getElementById('notification');
-                notification.style.display = 'block';
-                setTimeout(() => {
-                    notification.style.display = 'none';
-                }, 2000);
+        function copyAllCodes() {
+            const codes = Array.from(document.querySelectorAll('.code-item'))
+                            .map(item => item.textContent.trim().split('. ')[1]);
+            navigator.clipboard.writeText(codes.join('\n')).then(() => {
+                showNotification(`Copied ${codes.length} codes!`);
             });
         }
 
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 2000);
+        }
+        
         // Allow Enter key to generate
         document.getElementById('length').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
